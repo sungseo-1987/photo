@@ -88,17 +88,22 @@ btnSubmit.addEventListener('click', async () => {
                 submitter: submitter
             };
 
-            await fetch(GAS_URL, {
+            const response = await fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
+
+            const result = await response.json();
+            if (result.status === "error") {
+                throw new Error(result.message);
+            }
         }
 
         // 성공 시 화면 전환
         document.getElementById('upload-screen').style.display = 'none';
         document.getElementById('success-screen').style.display = 'block';
     } catch (err) {
-        alert('업로드 중 오류가 발생했습니다: ' + err.message);
+        alert('업로드 중 오류가 발생했습니다: ' + err.message + '\n\n보통 파일이 너무 크거나(10MB 이상), 구글 스크립트 권한 설정이 안 되어 있을 때 발생합니다.');
     } finally {
         setLoading(false);
     }
