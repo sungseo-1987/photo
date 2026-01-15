@@ -117,11 +117,12 @@ input[type="text"]:focus {
     gap: 8px;
     margin-top: 16px;
     width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .preview-item {
     width: 100%;
-    height: auto;
     aspect-ratio: 1 / 1;
     border-radius: 8px;
     object-fit: cover;
