@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교회 사역 사진 제출</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 메인 업로드 화면 -->
+        <div id="upload-screen">
+            <header>
+                <h1>📸 사역 사진 제출</h1>
+                <p>오늘의 은혜로운 순간을 공유해주세요</p>
+            </header>
+
+            <div class="form-group">
+                <label for="ministry-select">어떤 사역인가요?</label>
+                <select id="ministry-select">
+                    <option value="">불러오는 중...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="submitter-name">보내시는 분 (익명 가능)</label>
+                <input type="text" id="submitter-name" placeholder="이름을 입력해주세요">
+            </div>
+
+            <div class="upload-area" id="drop-zone">
+                <input type="file" id="file-input" multiple accept="image/*,video/*" style="display: none;">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>터치하여 사진/영상 선택</p>
+                <span>여러 장을 한꺼번에 선택할 수 있습니다</span>
+                <div id="file-preview"></div>
+            </div>
+
+            <button id="btn-submit" class="btn-submit" disabled>
+                <span class="spinner" id="spinner"></span>
+                <span id="btn-text">발송하기</span>
+            </button>
+        </div>
+
+        <!-- 성공 화면 -->
+        <div id="success-screen" class="success-screen">
+            <i class="fas fa-check-circle"></i>
+            <h2>제출 완료!</h2>
+            <p>소중한 사진 감사합니다.<br>은혜로운 하루 되세요 🙏</p>
+            <br>
+            <button class="btn-submit" onclick="location.reload()">추가 제출하기</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
