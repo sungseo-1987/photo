@@ -19,9 +19,6 @@ const fileCount = document.getElementById('file-count');
 const progressBar = document.getElementById('progress-bar');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
-const videoGuide = document.getElementById('video-guide');
-const videoDriveLink = document.getElementById('video-drive-link');
-
 let selectedFiles = [];
 let folderList = []; // 사역 폴더 목록 저장
 
@@ -44,24 +41,7 @@ async function loadMinistries() {
     }
 }
 
-// 2. 사역 선택 시 영상 안내 업데이트
-ministrySelect.addEventListener('change', () => {
-    checkReady();
-    updateVideoGuide();
-});
-
-function updateVideoGuide() {
-    const folderId = ministrySelect.value;
-    if (folderId && videoGuide && videoDriveLink) {
-        // 구글 드라이브 폴더 업로드 링크 생성
-        videoDriveLink.href = `https://drive.google.com/drive/folders/${folderId}`;
-        videoGuide.style.display = 'block';
-    } else if (videoGuide) {
-        videoGuide.style.display = 'none';
-    }
-}
-
-// 3. 파일 선택 처리 (사진만)
+// 2. 파일 선택 처리 (사진만)
 dropZone.addEventListener('click', (e) => {
     if (e.target.closest('.btn-remove')) return;
     fileInput.click();
@@ -167,6 +147,8 @@ function checkReady() {
     const isReady = ministrySelect.value && selectedFiles.length > 0;
     btnSubmit.disabled = !isReady;
 }
+
+ministrySelect.addEventListener('change', checkReady);
 
 // 5. 이미지 압축 함수
 function compressImage(file) {
