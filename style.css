@@ -48,6 +48,10 @@ header h1 {
     margin-bottom: 8px;
 }
 
+header h1 i {
+    margin-right: 4px;
+}
+
 header p {
     color: var(--text-muted);
     font-size: 14px;
@@ -74,6 +78,7 @@ input[type="text"] {
     font-size: 16px;
     transition: all 0.2s;
     background: #f9fafb;
+    -webkit-appearance: none;
 }
 
 select:focus,
@@ -94,23 +99,42 @@ input[type="text"]:focus {
     margin-bottom: 24px;
 }
 
-.upload-area:hover {
+.upload-area:hover,
+.upload-area.drag-over {
     border-color: var(--primary);
     background: #eef2ff;
 }
 
-.upload-area i {
+.upload-area i.fa-cloud-upload-alt {
     font-size: 40px;
     color: var(--primary);
     margin-bottom: 12px;
     display: block;
 }
 
-.upload-area span {
-    font-size: 14px;
+.upload-area p {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.upload-area > span {
+    font-size: 13px;
     color: var(--text-muted);
 }
 
+/* 파일 수 배지 */
+.file-count {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+/* 미리보기 그리드 */
 #file-preview {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -119,6 +143,10 @@ input[type="text"]:focus {
     width: 100%;
     max-width: 100%;
     overflow: hidden;
+}
+
+.preview-wrapper {
+    position: relative;
 }
 
 .preview-item {
@@ -130,6 +158,97 @@ input[type="text"]:focus {
     display: block;
 }
 
+/* 영상 미리보기 */
+.video-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #1f2937;
+    color: white;
+}
+
+.video-preview i {
+    font-size: 24px;
+    margin-bottom: 4px;
+    display: block;
+    color: white;
+}
+
+.video-name {
+    font-size: 10px;
+    color: #d1d5db;
+    word-break: break-all;
+}
+
+/* 개별 파일 삭제 버튼 */
+.btn-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 24px;
+    height: 24px;
+    background: #ef4444;
+    color: white;
+    border: 2px solid white;
+    border-radius: 50%;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    z-index: 10;
+    transition: transform 0.15s;
+}
+
+.btn-remove:hover {
+    transform: scale(1.2);
+}
+
+/* 진행률 바 */
+.progress-bar {
+    margin-bottom: 16px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #8b5cf6);
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+}
+
+/* 업로드 팁 */
+.upload-tip {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 16px;
+}
+
+.upload-tip i {
+    margin-right: 4px;
+    color: var(--primary);
+}
+
+/* 발송 버튼 */
 .btn-submit {
     width: 100%;
     background: var(--primary);
@@ -180,12 +299,63 @@ input[type="text"]:focus {
     padding: 40px 0;
 }
 
-.success-screen i {
-    font-size: 64px;
+.success-icon i {
+    font-size: 72px;
     color: #10b981;
     margin-bottom: 16px;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 .success-screen h2 {
     margin-bottom: 8px;
+    font-size: 24px;
+}
+
+.success-screen p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* 토스트 메시지 */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    padding: 14px 24px;
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    transition: transform 0.3s ease;
+    max-width: 90%;
+    text-align: center;
+    white-space: pre-line;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast-show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-error {
+    background: #ef4444;
+}
+
+.toast-warning {
+    background: #f59e0b;
+}
+
+.toast-info {
+    background: var(--primary);
+}
+
+.toast-success {
+    background: #10b981;
 }

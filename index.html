@@ -13,7 +13,7 @@
         <!-- 메인 업로드 화면 -->
         <div id="upload-screen">
             <header>
-                <h1>📸 사역 사진 제출</h1>
+                <h1><i class="fas fa-camera-retro"></i> 사역 사진 제출</h1>
                 <p>오늘의 은혜로운 순간을 공유해주세요</p>
             </header>
 
@@ -33,23 +33,38 @@
                 <input type="file" id="file-input" multiple accept="image/*,video/*" style="display: none;">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <p>터치하여 사진/영상 선택</p>
-                <span>여러 장을 한꺼번에 선택할 수 있습니다</span>
+                <span>여러 장을 한꺼번에 선택할 수 있습니다 (최대 20개)</span>
+                <span id="file-count" class="file-count" style="display: none;"></span>
                 <div id="file-preview"></div>
+            </div>
+
+            <!-- 업로드 진행률 표시 -->
+            <div id="progress-bar" class="progress-bar" style="display: none;">
+                <div class="progress-track">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p id="progress-text" class="progress-text">준비 중...</p>
             </div>
 
             <button id="btn-submit" class="btn-submit" disabled>
                 <span class="spinner" id="spinner"></span>
                 <span id="btn-text">발송하기</span>
             </button>
+
+            <p class="upload-tip"><i class="fas fa-info-circle"></i> 사진은 자동으로 최적화되어 전송됩니다</p>
         </div>
 
         <!-- 성공 화면 -->
         <div id="success-screen" class="success-screen">
-            <i class="fas fa-check-circle"></i>
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
             <h2>제출 완료!</h2>
-            <p>소중한 사진 감사합니다.<br>은혜로운 하루 되세요 🙏</p>
+            <p>소중한 사진 감사합니다.<br>은혜로운 하루 되세요</p>
             <br>
-            <button class="btn-submit" onclick="location.reload()">추가 제출하기</button>
+            <button class="btn-submit" onclick="location.reload()">
+                <i class="fas fa-plus"></i> 추가 제출하기
+            </button>
         </div>
     </div>
 
