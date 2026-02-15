@@ -5,7 +5,6 @@ const GAS_URL = 'https://script.google.com/macros/s/AKfycbwPxbwkQPXt2Pv_iAeINSr5
 const MAX_IMAGE_WIDTH = 1920;       // 이미지 최대 가로 픽셀
 const MAX_IMAGE_HEIGHT = 1920;      // 이미지 최대 세로 픽셀
 const IMAGE_QUALITY = 0.85;         // JPEG 압축 품질 (0~1)
-const MAX_FILE_SIZE_MB = 10;        // 파일당 최대 MB (영상 등)
 const MAX_FILE_COUNT = 20;          // 최대 파일 수
 
 const fileInput = document.getElementById('file-input');
@@ -20,14 +19,18 @@ const fileCount = document.getElementById('file-count');
 const progressBar = document.getElementById('progress-bar');
 const progressFill = document.getElementById('progress-fill');
 const progressText = document.getElementById('progress-text');
+const videoGuide = document.getElementById('video-guide');
+const videoDriveLink = document.getElementById('video-drive-link');
 
 let selectedFiles = [];
+let folderList = []; // 사역 폴더 목록 저장
 
 // 1. 사역 목록 불러오기
 async function loadMinistries() {
     try {
         const response = await fetch(GAS_URL);
         const folders = await response.json();
+        folderList = folders;
 
         ministrySelect.innerHTML = '<option value="">-- 사역을 선택하세요 --</option>' +
             folders.map(f =>
@@ -41,9 +44,25 @@ async function loadMinistries() {
     }
 }
 
-// 2. 파일 선택 처리
+// 2. 사역 선택 시 영상 안내 업데이트
+ministrySelect.addEventListener('change', () => {
+    checkReady();
+    updateVideoGuide();
+});
+
+function updateVideoGuide() {
+    const folderId = ministrySelect.value;
+    if (folderId && videoGuide && videoDriveLink) {
+        // 구글 드라이브 폴더 업로드 링크 생성
+        videoDriveLink.href = `https://drive.google.com/drive/folders/${folderId}`;
+        videoGuide.style.display = 'block';
+    } else if (videoGuide) {
+        videoGuide.style.display = 'none';
+    }
+}
+
+// 3. 파일 선택 처리 (사진만)
 dropZone.addEventListener('click', (e) => {
-    // 삭제 버튼 클릭 시 파일 선택기 열리지 않도록
     if (e.target.closest('.btn-remove')) return;
     fileInput.click();
 });
@@ -62,36 +81,42 @@ dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
     const files = Array.from(e.dataTransfer.files).filter(f =>
-        f.type.startsWith('image/') || f.type.startsWith('video/')
+        f.type.startsWith('image/')
     );
+    const videos = Array.from(e.dataTransfer.files).filter(f =>
+        f.type.startsWith('video/')
+    );
+    if (videos.length > 0) {
+        showToast('영상은 아래 구글 드라이브 링크에서 직접 업로드해주세요!', 'info');
+    }
     if (files.length > 0) handleFiles(files);
 });
 
 fileInput.addEventListener('change', (e) => {
     const files = Array.from(e.target.files);
     handleFiles(files);
-    // 같은 파일 다시 선택 가능하도록 리셋
     fileInput.value = '';
 });
 
 function handleFiles(files) {
+    // 이미지만 필터링
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    const videoFiles = files.filter(f => f.type.startsWith('video/'));
+
+    if (videoFiles.length > 0) {
+        showToast('영상은 아래 구글 드라이브 링크에서 직접 업로드해주세요!', 'info');
+    }
+
+    if (imageFiles.length === 0) return;
+
     const remaining = MAX_FILE_COUNT - selectedFiles.length;
     if (remaining <= 0) {
         showToast(`최대 ${MAX_FILE_COUNT}개까지 선택할 수 있습니다.`, 'warning');
         return;
     }
 
-    // 파일 크기 체크 (영상만 - 이미지는 압축 예정)
-    const oversized = files.filter(f =>
-        f.type.startsWith('video/') && f.size > MAX_FILE_SIZE_MB * 1024 * 1024
-    );
-    if (oversized.length > 0) {
-        showToast(`영상은 ${MAX_FILE_SIZE_MB}MB 이하만 가능합니다.\n(${oversized.map(f => f.name).join(', ')})`, 'error');
-        files = files.filter(f => !oversized.includes(f));
-    }
-
-    const toAdd = files.slice(0, remaining);
-    if (toAdd.length < files.length) {
+    const toAdd = imageFiles.slice(0, remaining);
+    if (toAdd.length < imageFiles.length) {
         showToast(`최대 ${MAX_FILE_COUNT}개까지만 추가됩니다.`, 'warning');
     }
 
@@ -106,17 +131,10 @@ function updatePreview() {
         const wrapper = document.createElement('div');
         wrapper.className = 'preview-wrapper';
 
-        if (file.type.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
-            img.className = 'preview-item';
-            wrapper.appendChild(img);
-        } else {
-            const icon = document.createElement('div');
-            icon.className = 'preview-item video-preview';
-            icon.innerHTML = `<i class="fas fa-video"></i><span class="video-name">${file.name.length > 10 ? file.name.substring(0, 10) + '...' : file.name}</span>`;
-            wrapper.appendChild(icon);
-        }
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.className = 'preview-item';
+        wrapper.appendChild(img);
 
         // 삭제 버튼
         const removeBtn = document.createElement('button');
@@ -144,15 +162,13 @@ function updatePreview() {
     }
 }
 
-// 3. 버튼 활성화 상태 체크
+// 4. 버튼 활성화 상태 체크
 function checkReady() {
     const isReady = ministrySelect.value && selectedFiles.length > 0;
     btnSubmit.disabled = !isReady;
 }
 
-ministrySelect.addEventListener('change', checkReady);
-
-// 4. 이미지 압축 함수
+// 5. 이미지 압축 함수
 function compressImage(file) {
     return new Promise((resolve) => {
         // GIF는 압축하지 않음
@@ -167,7 +183,6 @@ function compressImage(file) {
 
             // 리사이즈 필요 여부 확인
             if (width <= MAX_IMAGE_WIDTH && height <= MAX_IMAGE_HEIGHT && file.size <= 2 * 1024 * 1024) {
-                // 이미 작은 이미지는 그대로 사용
                 resolve(file);
                 URL.revokeObjectURL(img.src);
                 return;
@@ -196,7 +211,6 @@ function compressImage(file) {
         };
 
         img.onerror = () => {
-            // 이미지 로드 실패 시 원본 사용
             resolve(file);
         };
 
@@ -204,7 +218,7 @@ function compressImage(file) {
     });
 }
 
-// 5. 업로드 실행
+// 6. 업로드 실행
 btnSubmit.addEventListener('click', async () => {
     if (btnSubmit.disabled) return;
 
@@ -223,12 +237,7 @@ btnSubmit.addEventListener('click', async () => {
             updateProgress(i + 1, total, file.name);
 
             try {
-                let processedFile = file;
-
-                // 이미지인 경우 압축
-                if (file.type.startsWith('image/')) {
-                    processedFile = await compressImage(file);
-                }
+                let processedFile = await compressImage(file);
 
                 const fileData = await readFileAsBase64(processedFile);
                 const payload = {
@@ -256,15 +265,12 @@ btnSubmit.addEventListener('click', async () => {
         }
 
         if (failedFiles.length === 0) {
-            // 전부 성공
             document.getElementById('upload-screen').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
         } else if (successCount > 0) {
-            // 부분 성공
             showToast(`${successCount}개 성공, ${failedFiles.length}개 실패\n실패: ${failedFiles.join(', ')}`, 'warning');
         } else {
-            // 전부 실패
-            showToast('모든 파일 업로드에 실패했습니다.\n파일 크기를 확인하거나 잠시 후 다시 시도해주세요.', 'error');
+            showToast('모든 파일 업로드에 실패했습니다.\n잠시 후 다시 시도해주세요.', 'error');
         }
     } catch (err) {
         showToast('업로드 중 오류가 발생했습니다: ' + err.message, 'error');
@@ -308,7 +314,6 @@ function readFileAsBase64(file) {
 
 // 토스트 메시지
 function showToast(message, type = 'info') {
-    // 기존 토스트 제거
     const existing = document.querySelector('.toast');
     if (existing) existing.remove();
 
@@ -317,7 +322,6 @@ function showToast(message, type = 'info') {
     toast.textContent = message;
     document.body.appendChild(toast);
 
-    // 애니메이션
     requestAnimationFrame(() => {
         toast.classList.add('toast-show');
     });

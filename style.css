@@ -359,3 +359,63 @@ input[type="text"]:focus {
 .toast-success {
     background: #10b981;
 }
+
+/* 영상 구글 드라이브 안내 */
+.video-guide {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 2px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.video-guide-icon {
+    margin-bottom: 12px;
+}
+
+.video-guide-icon i {
+    font-size: 32px;
+    color: #059669;
+}
+
+.video-guide-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #065f46;
+    margin-bottom: 4px;
+}
+
+.video-guide-desc {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 16px;
+}
+
+.btn-drive {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #059669;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-drive:hover {
+    background: #047857;
+}
+
+.btn-drive i {
+    font-size: 18px;
+}
